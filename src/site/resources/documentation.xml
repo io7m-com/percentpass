@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <h3>User documentation</h3>
+  <p>
+    Annotate a test method:
+  </p>
+  <pre><![CDATA[
+@PercentPassing(executionCount = 1000, passPercent = 98.0)
+public void testPass()
+{
+  ...
+}
+]]></pre>
+  <p>
+    The method will be executed 1000 times, and 98% of the invocations must not throw an exception.
+  </p>
+</div>
