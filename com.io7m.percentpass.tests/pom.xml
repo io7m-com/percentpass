@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.io7m.percentpass</groupId>
     <artifactId>com.io7m.percentpass</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
   </parent>
 
   <artifactId>com.io7m.percentpass.tests</artifactId>
@@ -17,7 +17,7 @@
 
   <name>com.io7m.percentpass.tests</name>
   <description>Percentage-passing JUnit extension (Test suite)</description>
-  <url>https://www.github.com/io7m/percentpass</url>
+  <url>https://www.io7m.com/software/percentpass</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>

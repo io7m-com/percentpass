@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2020 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,9 +18,19 @@ package com.io7m.percentpass.extension.internal;
 
 import java.util.Objects;
 
+/**
+ * A display name formatter.
+ */
+
 public final class PercentPassDisplayNameFormatter
 {
   private final String displayName;
+
+  /**
+   * A display name formatter.
+   *
+   * @param inDisplayName The base display name
+   */
 
   public PercentPassDisplayNameFormatter(
     final String inDisplayName)
@@ -28,6 +38,15 @@ public final class PercentPassDisplayNameFormatter
     this.displayName =
       Objects.requireNonNull(inDisplayName, "displayName");
   }
+
+  /**
+   * Format a name.
+   *
+   * @param currentRepetition The current repetition
+   * @param totalRepetitions  The total repetitions
+   *
+   * @return A formatted name
+   */
 
   public String format(
     final int currentRepetition,

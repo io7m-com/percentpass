@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2020 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,12 +21,23 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
 import java.util.Objects;
 
+/**
+ * The percent pass context.
+ */
+
 public final class PercentPassContext implements TestTemplateInvocationContext
 {
   private final PercentPassing configuration;
   private final PercentPassDisplayNameFormatter formatter;
   private int invocations;
   private int failures;
+
+  /**
+   * The percent pass context.
+   *
+   * @param inConfiguration The configuration
+   * @param inFormatter     The formatter
+   */
 
   public PercentPassContext(
     final PercentPassing inConfiguration,
@@ -38,26 +49,46 @@ public final class PercentPassContext implements TestTemplateInvocationContext
       Objects.requireNonNull(inFormatter, "formatter");
   }
 
+  /**
+   * @return The percent passing configuration
+   */
+
   public PercentPassing configuration()
   {
     return this.configuration;
   }
+
+  /**
+   * @return The percent display formatter
+   */
 
   public PercentPassDisplayNameFormatter formatter()
   {
     return this.formatter;
   }
 
+  /**
+   * Add a new failure.
+   */
+
   public void addFailure()
   {
     ++this.failures;
   }
+
+  /**
+   * @return The percentage of passed tests
+   */
 
   public double successPercent()
   {
     final var success = this.configuration.executionCount() - this.failures;
     return 100.0 * ((double) success / (double) this.invocations);
   }
+
+  /**
+   * @return {@code true} if all tests have been invoked
+   */
 
   public boolean hasInvokedAll()
   {
@@ -71,6 +102,10 @@ public final class PercentPassContext implements TestTemplateInvocationContext
       invocationIndex,
       this.configuration().executionCount());
   }
+
+  /**
+   * Add a new invocation.
+   */
 
   public void addInvocation()
   {
