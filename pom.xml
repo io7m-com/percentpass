@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>6.2.0</version>
+    <version>7.0.0</version>
   </parent>
 
   <groupId>com.io7m.percentpass</groupId>
@@ -18,7 +18,7 @@
   <packaging>pom</packaging>
   <name>com.io7m.percentpass</name>
   <description>Percentage-passing JUnit extension</description>
-  <url>https://www.github.com/io7m/percentpass</url>
+  <url>https://www.io7m.com/software/percentpass</url>
 
   <modules>
     <module>com.io7m.percentpass.extension</module>
@@ -88,7 +88,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>6.2.0</version>
+        <version>7.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
