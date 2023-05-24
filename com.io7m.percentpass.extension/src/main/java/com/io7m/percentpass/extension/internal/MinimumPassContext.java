@@ -16,7 +16,7 @@
 
 package com.io7m.percentpass.extension.internal;
 
-import com.io7m.percentpass.extension.PercentPassing;
+import com.io7m.percentpass.extension.MinimumPassing;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
 import java.util.Objects;
@@ -25,9 +25,9 @@ import java.util.Objects;
  * The percent pass context.
  */
 
-public final class PercentPassContext implements TestTemplateInvocationContext
+public final class MinimumPassContext implements TestTemplateInvocationContext
 {
-  private final PercentPassing configuration;
+  private final MinimumPassing configuration;
   private final PercentPassDisplayNameFormatter formatter;
   private int invocations;
   private int failures;
@@ -39,8 +39,8 @@ public final class PercentPassContext implements TestTemplateInvocationContext
    * @param inFormatter     The formatter
    */
 
-  public PercentPassContext(
-    final PercentPassing inConfiguration,
+  public MinimumPassContext(
+    final MinimumPassing inConfiguration,
     final PercentPassDisplayNameFormatter inFormatter)
   {
     this.configuration =
@@ -53,7 +53,7 @@ public final class PercentPassContext implements TestTemplateInvocationContext
    * @return The percent passing configuration
    */
 
-  public PercentPassing configuration()
+  public MinimumPassing configuration()
   {
     return this.configuration;
   }
@@ -65,16 +65,6 @@ public final class PercentPassContext implements TestTemplateInvocationContext
   public void addFailure()
   {
     ++this.failures;
-  }
-
-  /**
-   * @return The percentage of passed tests
-   */
-
-  public double successPercent()
-  {
-    final var success = this.configuration.executionCount() - this.failures;
-    return 100.0 * ((double) success / (double) this.invocations);
   }
 
   /**
@@ -101,5 +91,14 @@ public final class PercentPassContext implements TestTemplateInvocationContext
   public void addInvocation()
   {
     ++this.invocations;
+  }
+
+  /**
+   * @return The number of successful executions
+   */
+
+  public int successCount()
+  {
+    return this.configuration.executionCount() - this.failures;
   }
 }

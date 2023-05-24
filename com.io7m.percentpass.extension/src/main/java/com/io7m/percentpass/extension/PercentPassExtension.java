@@ -17,6 +17,7 @@
 package com.io7m.percentpass.extension;
 
 import com.io7m.jaffirm.core.Preconditions;
+import com.io7m.percentpass.extension.internal.MinimumPassContext;
 import com.io7m.percentpass.extension.internal.PercentPassContext;
 import com.io7m.percentpass.extension.internal.PercentPassDisplayNameFormatter;
 import org.junit.jupiter.api.Assertions;
@@ -60,16 +61,30 @@ public final class PercentPassExtension
   public boolean supportsTestTemplate(
     final ExtensionContext context)
   {
-    return isAnnotated(context.getTestMethod(), PercentPassing.class);
+    return isAnnotated(context.getTestMethod(), PercentPassing.class)
+      || isAnnotated(context.getTestMethod(), MinimumPassing.class);
   }
 
   @Override
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(
     final ExtensionContext context)
   {
+    return Stream.concat(
+      invocationsForPercentPassing(context),
+      invocationsForMinimumPassing(context)
+    );
+  }
+
+  private static Stream<TestTemplateInvocationContext> invocationsForPercentPassing(
+    final ExtensionContext context)
+  {
     final var passing =
       context.getRequiredTestMethod()
         .getAnnotation(PercentPassing.class);
+
+    if (passing == null) {
+      return Stream.of();
+    }
 
     Preconditions.checkPreconditionV(
       Integer.valueOf(passing.executionCount()),
@@ -91,11 +106,7 @@ public final class PercentPassExtension
       context.getStore(ExtensionContext.Namespace.create(PercentPassExtension.class));
 
     final var name =
-      String.format(
-        "%s:%s",
-        context.getRequiredTestClass().getCanonicalName(),
-        context.getRequiredTestMethod().getName()
-      );
+      createPercentName(context);
 
     final var existing =
       store.get(name, PercentPassContext.class);
@@ -115,6 +126,59 @@ public final class PercentPassExtension
       .mapToObj(invocation -> container);
   }
 
+  private static Stream<TestTemplateInvocationContext> invocationsForMinimumPassing(
+    final ExtensionContext context)
+  {
+    final MinimumPassing passing =
+      context.getRequiredTestMethod()
+        .getAnnotation(MinimumPassing.class);
+
+    if (passing == null) {
+      return Stream.of();
+    }
+
+    Preconditions.checkPreconditionV(
+      Integer.valueOf(passing.executionCount()),
+      passing.executionCount() > 1,
+      "Execution count must be greater than 1"
+    );
+    Preconditions.checkPreconditionV(
+      Integer.valueOf(passing.passMinimum()),
+      passing.passMinimum() > 1,
+      "Pass count must be greater than 0"
+    );
+    Preconditions.checkPreconditionV(
+      Integer.valueOf(passing.passMinimum()),
+      passing.passMinimum() <= passing.executionCount(),
+      "Pass count must be less than or equal to %d",
+      Integer.valueOf(passing.executionCount())
+    );
+
+    final var store =
+      context.getStore(ExtensionContext.Namespace.create(PercentPassExtension.class));
+
+    final var name =
+      createMinimumName(context);
+
+    final var existing =
+      store.get(name, PercentPassContext.class);
+    if (existing != null) {
+      throw new IllegalStateException(
+        String.format("Context %s already registered", name)
+      );
+    }
+
+    final var formatter =
+      new PercentPassDisplayNameFormatter(context.getDisplayName());
+    final var container =
+      new MinimumPassContext(passing, formatter);
+
+    store.put(name, container);
+    return IntStream.rangeClosed(1, passing.executionCount())
+      .mapToObj(invocation -> container);
+  }
+
+
   @Override
   public void interceptTestTemplateMethod(
     final Invocation<Void> invocation,
@@ -123,25 +187,37 @@ public final class PercentPassExtension
     throws Throwable
   {
     final var store =
-      extensionContext.getStore(ExtensionContext.Namespace.create(
-        PercentPassExtension.class));
+      extensionContext.getStore(
+        ExtensionContext.Namespace.create(PercentPassExtension.class));
 
-    final var name =
-      String.format(
-        "%s:%s",
-        extensionContext.getRequiredTestClass().getCanonicalName(),
-        extensionContext.getRequiredTestMethod().getName()
-      );
+    final var minimumName =
+      createMinimumName(extensionContext);
+    final var percentName =
+      createPercentName(extensionContext);
 
     final var percentContext =
-      store.get(name, PercentPassContext.class);
+      store.get(percentName, PercentPassContext.class);
 
-    percentContext.addInvocation();
+    if (percentContext != null) {
+      percentContext.addInvocation();
+    }
+
+    final var minimumContext =
+      store.get(minimumName, MinimumPassContext.class);
+
+    if (minimumContext != null) {
+      minimumContext.addInvocation();
+    }
 
     try {
       invocation.proceed();
     } catch (final Throwable e) {
-      percentContext.addFailure();
+      if (percentContext != null) {
+        percentContext.addFailure();
+      }
+      if (minimumContext != null) {
+        minimumContext.addFailure();
+      }
       throw e;
     }
   }
@@ -152,17 +228,70 @@ public final class PercentPassExtension
     final Throwable throwable)
   {
     final var store =
-      context.getStore(ExtensionContext.Namespace.create(PercentPassExtension.class));
+      context.getStore(
+        ExtensionContext.Namespace.create(PercentPassExtension.class));
 
-    final var name =
-      String.format(
-        "%s:%s",
-        context.getRequiredTestClass().getCanonicalName(),
-        context.getRequiredTestMethod().getName()
+    checkPercentExecution(context, throwable, store);
+    checkMinimumExecution(context, throwable, store);
+  }
+
+  private static void checkMinimumExecution(
+    final ExtensionContext context,
+    final Throwable throwable,
+    final ExtensionContext.Store store)
+  {
+    final var minimumName =
+      createMinimumName(context);
+    final var minimumContext =
+      store.get(minimumName, MinimumPassContext.class);
+
+    if (minimumContext == null) {
+      return;
+    }
+
+    if (minimumContext.hasInvokedAll()) {
+      final var received = minimumContext.successCount();
+      final var expected = minimumContext.configuration().passMinimum();
+
+      LOG.info(
+        "{}: {} successes in {} invocations",
+        minimumName,
+        Integer.valueOf(received),
+        Integer.valueOf(minimumContext.configuration().executionCount())
       );
+      if (received < expected) {
+        Assertions.fail(
+          new StringBuilder(128)
+            .append("Too few test invocations succeeded without an error.")
+            .append(System.lineSeparator())
+            .append("  Expected: ")
+            .append(expected)
+            .append(System.lineSeparator())
+            .append("  Received: ")
+            .append(received)
+            .append(System.lineSeparator())
+            .toString()
+        );
+      }
+    } else {
+      LOG.error("{}: ", minimumName, throwable);
+      throw new TestAbortedException();
+    }
+  }
 
+  private static void checkPercentExecution(
+    final ExtensionContext context,
+    final Throwable throwable,
+    final ExtensionContext.Store store)
+  {
+    final var percentName =
+      createPercentName(context);
     final var percentContext =
-      store.get(name, PercentPassContext.class);
+      store.get(percentName, PercentPassContext.class);
+
+    if (percentContext == null) {
+      return;
+    }
 
     if (percentContext.hasInvokedAll()) {
       final var received = percentContext.successPercent();
@@ -170,7 +299,7 @@ public final class PercentPassExtension
 
       LOG.info(
         "{}: {}% success in {} invocations",
-        name,
+        percentName,
         Double.valueOf(received),
         Integer.valueOf(percentContext.configuration().executionCount())
       );
@@ -191,8 +320,28 @@ public final class PercentPassExtension
         );
       }
     } else {
-      LOG.error("{}: ", name, throwable);
+      LOG.error("{}: ", percentName, throwable);
       throw new TestAbortedException();
     }
+  }
+
+  private static String createPercentName(
+    final ExtensionContext context)
+  {
+    return String.format(
+      "Percent %s:%s",
+      context.getRequiredTestClass().getCanonicalName(),
+      context.getRequiredTestMethod().getName()
+    );
+  }
+
+  private static String createMinimumName(
+    final ExtensionContext extensionContext)
+  {
+    return String.format(
+      "Minimum %s:%s",
+      extensionContext.getRequiredTestClass().getCanonicalName(),
+      extensionContext.getRequiredTestMethod().getName()
+    );
   }
 }

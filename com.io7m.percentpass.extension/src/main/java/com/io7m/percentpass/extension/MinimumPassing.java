@@ -14,34 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.percentpass.tests;
+package com.io7m.percentpass.extension;
 
-import com.io7m.percentpass.extension.MinimumPassing;
-import com.io7m.percentpass.extension.PercentPassing;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-public final class ExtensionTest
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * An annotation that produces a templated test where only a given number
+ * of the invocations need to succeed.
+ */
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+@ExtendWith(PercentPassExtension.class)
+@TestTemplate
+public @interface MinimumPassing
 {
-  private static int EXECS_PERCENT = 0;
-  private static int EXECS_MINIMUM = 0;
+  /**
+   * @return The number of executions of each test
+   */
 
-  @PercentPassing(executionCount = 1000, passPercent = 98.0)
-  public void testPercentOK()
-  {
-    ++EXECS_PERCENT;
+  int executionCount() default 100;
 
-    if (EXECS_PERCENT > 980) {
-      Assertions.fail();
-    }
-  }
+  /**
+   * @return The minimum number of iterations that must pass for a given
+   * test
+   */
 
-  @MinimumPassing(executionCount = 1000, passMinimum = 980)
-  public void testMinimumOK()
-  {
-    ++EXECS_MINIMUM;
-
-    if (EXECS_MINIMUM > 980) {
-      Assertions.fail();
-    }
-  }
+  int passMinimum() default 98;
 }
