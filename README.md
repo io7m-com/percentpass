@@ -30,7 +30,7 @@ working correctly 98% of the time is acceptable.
 
   * Percentage passing; specify that a percentage of the iterations of a test must succeed.
   * Minimum passing: specify that an integral number of the iterations of a test must succeed.
-  * Written in pure Java 21.
+  * Written in pure Java 17.
   * [OSGi](https://www.osgi.org/) ready
   * [JPMS](https://en.wikipedia.org/wiki/Java_Platform_Module_System) ready
   * ISC license
