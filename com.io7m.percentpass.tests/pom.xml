@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.io7m.percentpass</groupId>
     <artifactId>com.io7m.percentpass</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>com.io7m.percentpass.tests</artifactId>
