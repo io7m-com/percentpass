@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.io7m.percentpass</groupId>
     <artifactId>com.io7m.percentpass</artifactId>
-    <version>0.0.3</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>com.io7m.percentpass.tests</artifactId>
@@ -20,7 +20,10 @@
   <url>https://www.io7m.com/software/percentpass</url>
 
   <properties>
+    <bnd.baseline.skip>true</bnd.baseline.skip>
+    <checkstyle.skip>true</checkstyle.skip>
     <mdep.analyze.skip>true</mdep.analyze.skip>
+    <spotbugs.skip>true</spotbugs.skip>
   </properties>
 
   <dependencies>

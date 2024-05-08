@@ -8,12 +8,12 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.7.0</version>
+    <version>8.2.0</version>
   </parent>
 
   <groupId>com.io7m.percentpass</groupId>
   <artifactId>com.io7m.percentpass</artifactId>
-  <version>0.0.3</version>
+  <version>1.0.0</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.percentpass</name>
@@ -26,9 +26,13 @@
   </modules>
 
   <properties>
-    <io7m.api.previousVersion>0.0.3</io7m.api.previousVersion>
-    <org.immutables.version>2.9.3</org.immutables.version>
-    <junit.version>5.9.3</junit.version>
+    <!-- Configuration. -->
+    <io7m.api.previousVersion>1.0.0</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>17</io7m.java.targetJavaVersion>
+
+    <!-- Third-party dependencies. -->
+    <org.immutables.version>2.10.1</org.immutables.version>
+    <junit.version>5.10.2</junit.version>
   </properties>
 
   <licenses>
@@ -39,9 +43,9 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/io7m/percentpass</url>
-    <connection>scm:git:https://github.com/io7m/percentpass</connection>
-    <developerConnection>scm:git:https://github.com/io7m/percentpass</developerConnection>
+    <url>https://www.github.com/io7m-com/percentpass</url>
+    <connection>scm:git:https://www.github.com/io7m-com/percentpass</connection>
+    <developerConnection>scm:git:https://www.github.com/io7m-com/percentpass</developerConnection>
   </scm>
 
   <developers>
@@ -54,7 +58,7 @@
   </developers>
 
   <issueManagement>
-    <url>https://www.github.com/io7m/percentpass/issues</url>
+    <url>https://www.github.com/io7m-com/percentpass/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -76,7 +80,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/percentpass/actions</url>
+    <url>https://www.github.com/io7m-com/percentpass/actions</url>
   </ciManagement>
 
   <prerequisites>
@@ -86,9 +90,37 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opentest4j</groupId>
+        <artifactId>opentest4j</artifactId>
+        <version>1.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-commons</artifactId>
+        <version>1.10.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.io7m.jaffirm</groupId>
+        <artifactId>com.io7m.jaffirm.core</artifactId>
+        <version>4.0.1</version>
+      </dependency>
+
+      <!-- Build and metadata. -->
+      <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.7.0</version>
+        <version>8.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -100,50 +132,17 @@
         <artifactId>org.osgi.annotation.bundle</artifactId>
         <version>2.0.0</version>
       </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.jaffirm</groupId>
-        <artifactId>com.io7m.jaffirm.core</artifactId>
-        <version>4.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.immutables</groupId>
-        <artifactId>value</artifactId>
-        <version>${org.immutables.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.immutables.style</groupId>
-        <artifactId>com.io7m.immutables.style</artifactId>
-        <version>0.0.1</version>
-      </dependency>
+
+      <!-- Logging. -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>2.0.7</version>
+        <version>2.0.13</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.4.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opentest4j</groupId>
-        <artifactId>opentest4j</artifactId>
-        <version>1.2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-commons</artifactId>
-        <version>1.9.3</version>
+        <version>1.5.6</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
