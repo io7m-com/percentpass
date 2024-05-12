@@ -212,6 +212,8 @@ public final class PercentPassExtension
     try {
       invocation.proceed();
     } catch (final Throwable e) {
+      LOG.error("Test failed: ", e);
+
       if (percentContext != null) {
         percentContext.addFailure();
       }
