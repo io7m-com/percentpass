@@ -1,6 +1,5 @@
 
-
-# percentpass
+## percentpass
 
 A minimal [Junit 5](https://junit.org/junit5/) extension that allows for
 executing tests multiple times, and requiring a minimum number of successful
